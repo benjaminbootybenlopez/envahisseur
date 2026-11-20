@@ -20,7 +20,7 @@ function createCard(upgrade, index) {
   card.querySelector('.ico').textContent = upgrade.icon;
   card.querySelector('.name').textContent = upgrade.name;
   card.querySelector('.desc').textContent = upgrade.desc;
-  card.querySelector('.lvl').textContent = upgrade.max > 10 ? 'RÉPARATION' : 'NIVEAU ' + (level + 1) + ' / ' + upgrade.max;
+  card.querySelector('.lvl').textContent = upgrade.repeatable ? 'RÉPARATION' : 'NIVEAU ' + (level + 1) + ' / ' + upgrade.max;
   card.addEventListener('click', () => chooseUpgrade(index));
   return card;
 }

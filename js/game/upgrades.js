@@ -14,7 +14,7 @@ export const UPGRADES = [
   { id: 'dashr', name: 'Réacteur de phase', desc: 'Le dash se recharge 30 % plus vite', max: 3, icon: '↻', color: '#5cffc8', apply() { stats.dashCd *= 0.7; } },
   { id: 'nova', name: 'Onde de choc', desc: 'Le dash explose à l’arrivée et balaie les tirs', max: 2, icon: '✺', color: '#ffb14a', apply() { stats.nova++; } },
   { id: 'hull', name: 'Coque renforcée', desc: '+1 point de coque maximum, et réparation', max: 3, icon: '⬢', color: '#5cffc8', apply() { player.maxHp++; player.hp++; } },
-  { id: 'heal', name: 'Nanoréparation', desc: 'Répare 2 points de coque', max: 99, icon: '✚', color: '#7dff7a', available: () => player.hp < player.maxHp, apply() { player.hp = Math.min(player.maxHp, player.hp + 2); } },
+  { id: 'heal', name: 'Nanoréparation', desc: 'Répare 2 points de coque', repeatable: true, icon: '✚', color: '#7dff7a', available: () => player.hp < player.maxHp, apply() { player.hp = Math.min(player.maxHp, player.hp + 2); } },
   { id: 'beam', name: 'Rayon élargi', desc: 'Rayon tracteur : portée et largeur +35 %', max: 2, icon: '◭', color: '#7dff7a', available: () => game.beamUnlocked, apply() { stats.beamRange *= 1.35; stats.beamHalf *= 1.35; } },
   { id: 'bio', name: 'Assimilation', desc: '2 humains de moins pour réparer la coque', max: 2, icon: '❖', color: '#7dff7a', available: () => game.beamUnlocked, apply() { stats.humansPerHeal -= 2; } },
   { id: 'drone', name: 'Drone orbital', desc: 'Un drone tourne autour de toi, blesse les ennemis et bloque les tirs', max: 3, icon: '◉', color: '#6bd6ff', apply() { stats.drones++; } },
@@ -24,7 +24,7 @@ export const UPGRADES = [
 ];
 /** Tire trois mutations encore disponibles. */
 export function rollUpgrades() {
-  const pool = UPGRADES.filter(u => (game.levels[u.id] || 0) < u.max && (!u.available || u.available()));
+  const pool = UPGRADES.filter(u => (u.repeatable || (game.levels[u.id] || 0) < u.max) && (!u.available || u.available()));
   return shuffle(pool).slice(0, 3);
 }
 export function applyUpgrade(u) {

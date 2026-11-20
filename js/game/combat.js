@@ -1,14 +1,28 @@
 /**
- * Dégâts, éliminations, enlèvements et explosions.
+ * Dégâts, contacts, éliminations, enlèvements et explosions.
  */
 import { COLORS } from '../config.js';
 import { fmt } from '../utils/format.js';
 import { rand, TAU } from '../utils/math.js';
-import { difficulty, enemies, enemyShots, game, particles, pickups, player, stats } from '../state.js';
+import { difficulty, enemies, enemyShots, game, pickups, player, stats } from '../state.js';
 import { setBeamSound } from '../audio/engine.js';
 import { SFX } from '../audio/sfx.js';
-import { burst, floatText, ring, shake, spark } from './effects.js';
+import { burst, emitParticle, floatText, ring, shake, showBanner, spark } from './effects.js';
 import { addScore, bumpChain } from './scoring.js';
+
+/**
+ * Vrai si l'unité e touche la soucoupe. d est la distance entre eux ;
+ * `reach` est la part du rayon de l'unité qui compte (sa silhouette n'est pas un disque plein).
+ */
+export function inContact(e, d, reach = 0.85) {
+  return d < player.r * 0.7 + e.r * reach;
+}
+
+/** Détruit un tir ennemi avec une petite gerbe d'étincelles. */
+export function destroyShot(b, sparks = 2) {
+  b.dead = true;
+  spark(b.x, b.y, b.c, rand(0, TAU), sparks);
+}
 
 export function hurtEnemy(e, dmg, fromA, how) {
   if (e.dead) return;
@@ -36,11 +50,14 @@ export function killEnemy(e, how) {
   }
 }
 export function abduct(e) {
-  e.dead = true; e.abducted = true; game.abducted++; game.kills++;
+  e.dead = true; game.abducted++; game.kills++;
   bumpChain();
   addScore(15);
   SFX.abduct();
-  for (let i = 0; i < 8; i++) { const a = rand(0, TAU); particles.push({ x: player.x + Math.cos(a) * 26, y: player.y + Math.sin(a) * 26, vx: -Math.cos(a) * 90, vy: -Math.sin(a) * 90, life: 0.3, max: 0.3, size: 3, color: '#7dff7a', drag: 0 }); }
+  for (let i = 0; i < 8; i++) {
+    const a = rand(0, TAU);
+    emitParticle({ x: player.x + Math.cos(a) * 26, y: player.y + Math.sin(a) * 26, vx: -Math.cos(a) * 90, vy: -Math.sin(a) * 90, life: 0.3, size: 3, color: '#7dff7a' });
+  }
   player.bio++;
   if (player.bio >= stats.humansPerHeal) {
     player.bio = 0;
@@ -49,7 +66,7 @@ export function abduct(e) {
   }
 }
 export function clearBulletsNear(x, y, r) {
-  for (const b of enemyShots) if (!b.dead && Math.hypot(b.x - x, b.y - y) < r) { b.dead = true; spark(b.x, b.y, b.c, rand(0, TAU), 2); }
+  for (const b of enemyShots) if (!b.dead && Math.hypot(b.x - x, b.y - y) < r) destroyShot(b);
 }
 export function damagePlayer() {
   if (player.dead || player.inv > 0 || player.dash > 0) return;
@@ -82,7 +99,7 @@ function bossDeath(e) {
   burst(e.x, e.y, '#ffffff', 60, 900, 6, 1.2);
   ring(e.x, e.y, '#ffffff', 700, 1.2, 10); ring(e.x, e.y, COLORS.boss, 420, 0.9, 8);
   shake(40); game.flash = 1; SFX.boom(true);
-  game.banner = { title: 'LA TERRE EST À TOI', sub: '', t: 3.4, max: 3.4, c: COLORS.alien };
+  showBanner('LA TERRE EST À TOI', '', 3.4, COLORS.alien);
   game.boss = null;
 }
 
@@ -95,6 +112,6 @@ export function explodeBomb(x, y) {
   for (const b of enemyShots) {
     if (b.dead) continue;
     const d = Math.hypot(b.x - x, b.y - y);
-    if (d < (b.missile ? R : R * 0.6)) { b.dead = true; spark(b.x, b.y, b.c, rand(0, TAU), 2); if (b.missile) addScore(5); }
+    if (d < (b.missile ? R : R * 0.6)) { destroyShot(b); if (b.missile) addScore(5); }
   }
 }

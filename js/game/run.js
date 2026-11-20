@@ -6,6 +6,7 @@ import { clamp, rand, shuffle } from '../utils/math.js';
 import { clearEntities, difficulty, enemies, game, player, replaceContents, stats } from '../state.js';
 import { setMusic } from '../audio/music.js';
 import { SFX } from '../audio/sfx.js';
+import { showBanner } from './effects.js';
 import { spawnBoss, spawnEnemy } from './spawn.js';
 import { applyUpgrade, rollUpgrades } from './upgrades.js';
 import { KEYS } from '../input/key-labels.js';
@@ -40,10 +41,10 @@ export function startWave(n) {
   let sub = WAVE_NAMES[n] || '';
   if (n >= 2 && !game.beamUnlocked) {
     game.beamUnlocked = true; SFX.unlock();
-    game.banner = { title: 'RAYON TRACTEUR DÉBLOQUÉ', sub: 'Maintiens la touche ' + KEYS.beam + ' : aspire les humains pour réparer ta coque', t: 4.2, max: 4.2, c: '#7dff7a' };
+    showBanner('RAYON TRACTEUR DÉBLOQUÉ', 'Maintiens la touche ' + KEYS.beam + ' : aspire les humains pour réparer ta coque', 4.2, '#7dff7a');
     game.hintT = 0;
   } else if (n <= LAST_WAVE) {
-    game.banner = { title: 'VAGUE ' + n, sub, t: 2.4, max: 2.4, c: COLORS.alien };
+    showBanner('VAGUE ' + n, sub, 2.4, COLORS.alien);
   }
   if (n <= LAST_WAVE) {
     const w = WAVES[n], heavy = [], q = [];
@@ -58,7 +59,7 @@ export function startWave(n) {
     setMusic(n <= 3 ? 1 : n <= 6 ? 2 : 3);
   } else {
     game.queue = []; game.waveTotal = 1;
-    game.banner = { title: 'ALERTE : LE BASTION', sub: 'La dernière forteresse de l’humanité', t: 3.4, max: 3.4, c: COLORS.boss };
+    showBanner('ALERTE : LE BASTION', 'La dernière forteresse de l’humanité', 3.4, COLORS.boss);
     game.bossSpawnT = 2.2;
     setMusic(4);
   }

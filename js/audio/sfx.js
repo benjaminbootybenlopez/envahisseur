@@ -12,6 +12,14 @@ function throttled(name, ms) {
   if (lastPlayed[name] && now - lastPlayed[name] < ms) return true;
   lastPlayed[name] = now; return false;
 }
+
+/** Joue des notes l'une après l'autre, espacées de `step` secondes. */
+function arpeggio(type, notes, step, dur, vol) {
+  if (!audio.ctx) return;
+  const t = audio.ctx.currentTime;
+  notes.forEach((f, i) => tone(type, f, 0, dur, vol, null, t + i * step));
+}
+
 export const SFX = {
   shoot() { if (throttled('shoot', 45)) return; tone('square', rand(820, 900), 380, 0.07, 0.035); },
   hit() { if (throttled('hit', 40)) return; tone('triangle', 420, 180, 0.05, 0.07); },
@@ -28,7 +36,7 @@ export const SFX = {
   shield() { tone('sine', 1200, 300, 0.3, 0.16); noise(0.2, 0.12, 'highpass', 3000, 6000); },
   pickup() { if (throttled('pick', 40)) return; tone('sine', 900, 1500, 0.07, 0.05); },
   abduct() { if (throttled('abd', 60)) return; tone('sine', 380, 1300, 0.2, 0.09); tone('triangle', 760, 2100, 0.2, 0.03); },
-  heal() { [523, 659, 784, 1047].forEach((f, i) => tone('triangle', f, 0, 0.22, 0.09, null, audio.ctx ? audio.ctx.currentTime + i * 0.07 : 0)); },
+  heal() { arpeggio('triangle', [523, 659, 784, 1047], 0.07, 0.22, 0.09); },
   eshoot() { if (throttled('es', 70)) return; tone('square', 240, 150, 0.06, 0.025); },
   shell() { if (throttled('sh', 80)) return; tone('square', 150, 60, 0.16, 0.09); noise(0.12, 0.1, 'lowpass', 900, 200); },
   tele() { if (throttled('tele', 120)) return; tone('sawtooth', 640, 660, 0.12, 0.03); },
@@ -37,14 +45,14 @@ export const SFX = {
   laser() { tone('sawtooth', 82, 76, 2.6, 0.2, null, 0, 0.05); tone('square', 164, 150, 2.6, 0.07, null, 0, 0.05); noise(2.6, 0.1, 'highpass', 4000, 2500); },
   charge() { tone('sawtooth', 120, 900, 1.05, 0.08, null, 0, 0.4); },
   ui() { tone('sine', 660, 990, 0.08, 0.07); },
-  upgrade() { [440, 554, 659, 880].forEach((f, i) => tone('square', f, 0, 0.16, 0.05, null, audio.ctx ? audio.ctx.currentTime + i * 0.06 : 0)); },
-  clear() { [392, 494, 587, 784, 988].forEach((f, i) => tone('triangle', f, 0, 0.3, 0.09, null, audio.ctx ? audio.ctx.currentTime + i * 0.08 : 0)); },
-  unlock() { [330, 440, 554, 659, 880, 1109].forEach((f, i) => tone('sine', f, 0, 0.35, 0.09, null, audio.ctx ? audio.ctx.currentTime + i * 0.09 : 0)); },
+  upgrade() { arpeggio('square', [440, 554, 659, 880], 0.06, 0.16, 0.05); },
+  clear() { arpeggio('triangle', [392, 494, 587, 784, 988], 0.08, 0.3, 0.09); },
+  unlock() { arpeggio('sine', [330, 440, 554, 659, 880, 1109], 0.09, 0.35, 0.09); },
   // fanfare : arpège montant, note tenue, puis accord final scintillant
   victory() {
     if (!audio.ctx) return;
     const t = audio.ctx.currentTime;
-    [523, 659, 784].forEach((f, i) => tone('square', f, 0, 0.16, 0.06, null, t + i * 0.12));
+    arpeggio('square', [523, 659, 784], 0.12, 0.16, 0.06);
     tone('square', 1047, 0, 0.5, 0.07, null, t + 0.36);
     tone('triangle', 1047, 0, 0.5, 0.08, null, t + 0.36);
     [523, 659, 784, 1047].forEach(f => {

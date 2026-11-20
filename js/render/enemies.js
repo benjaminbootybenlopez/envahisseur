@@ -7,71 +7,71 @@ import { enemies, game } from '../state.js';
 import { ctx } from './canvas.js';
 import { glow, poly } from './shapes.js';
 
+// Chaque fonction dessine une unité centrée sur l'origine, couleurs et lueur déjà réglées.
+const DRAW_BY_TYPE = {
+  soldier(e) {
+    const s = e.pulled ? 0.8 : 1;
+    ctx.rotate(e.a);
+    ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.arc(0, 0, e.r * s, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(0, 0, e.r * s, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(4, 0); ctx.lineTo(e.r + 6, 0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 3, 0, TAU); ctx.fill();
+  },
+  tank(e) {
+    ctx.save(); ctx.rotate(e.a);
+    ctx.globalAlpha = 0.18; ctx.fillRect(-e.r, -e.r * 0.8, e.r * 2, e.r * 1.6);
+    ctx.globalAlpha = 1; ctx.strokeRect(-e.r, -e.r * 0.8, e.r * 2, e.r * 1.6);
+    ctx.strokeRect(-e.r, -e.r * 0.8 - 5, e.r * 2, 5); ctx.strokeRect(-e.r, e.r * 0.8, e.r * 2, 5);
+    ctx.restore();
+    // tourelle, blanche pendant le signal de tir
+    ctx.rotate(e.ta);
+    if (e.tele > 0) { ctx.strokeStyle = '#fff'; ctx.fillStyle = '#fff'; glow('#ffb14a', 24); }
+    ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(38, 0); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 11, 0, TAU); ctx.fill();
+  },
+  heli(e) {
+    ctx.save(); ctx.rotate(e.a);
+    ctx.globalAlpha = 0.2; ctx.beginPath(); ctx.ellipse(0, 0, e.r, e.r * 0.62, 0, 0, TAU); ctx.fill();
+    ctx.globalAlpha = 1; ctx.beginPath(); ctx.ellipse(0, 0, e.r, e.r * 0.62, 0, 0, TAU); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-e.r, 0); ctx.lineTo(-e.r - 14, 0); ctx.stroke();
+    ctx.restore();
+    // rotor
+    ctx.rotate(e.t * 22); ctx.lineWidth = 2; ctx.globalAlpha = 0.8;
+    ctx.beginPath(); ctx.moveTo(-26, 0); ctx.lineTo(26, 0); ctx.moveTo(0, -26); ctx.lineTo(0, 26); ctx.stroke();
+  },
+  jet(e) {
+    if (e.state !== 'fly') return; // invisible entre deux passages
+    ctx.rotate(e.a);
+    ctx.beginPath(); ctx.moveTo(24, 0); ctx.lineTo(-16, -17); ctx.lineTo(-8, 0); ctx.lineTo(-16, 17); ctx.closePath();
+    ctx.globalAlpha = 0.3; ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
+  },
+  battery(e) {
+    poly(0, 0, e.r, 6, e.state === 'on' ? e.t * 0.6 : e.a);
+    ctx.globalAlpha = 0.18; ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
+    const k = e.state === 'on' ? clamp(1 - e.cd / 1, 0, 1) : 0; // les ogives grossissent avant le tir
+    for (let i = 0; i < 3; i++) { const a = e.t * 0.6 + i * TAU / 3; ctx.beginPath(); ctx.arc(Math.cos(a) * 11, Math.sin(a) * 11, 4 + k * 2, 0, TAU); ctx.fill(); }
+  },
+  boss(e) {
+    ctx.lineWidth = 4; glow(e.c, 30);
+    poly(0, 0, e.r, 8, e.a);
+    ctx.globalAlpha = 0.16; ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
+    poly(0, 0, e.r * 0.72, 8, -e.a * 1.6); ctx.lineWidth = 2; ctx.stroke();
+    for (let i = 0; i < 4; i++) { const a = e.a + i * TAU / 4 + TAU / 16; ctx.beginPath(); ctx.arc(Math.cos(a) * e.r * 0.86, Math.sin(a) * e.r * 0.86, 9, 0, TAU); ctx.fill(); }
+    // cœur pulsant, plus gros pendant le laser
+    const pulse = 0.75 + Math.sin(e.t * 6) * 0.25;
+    ctx.fillStyle = e.flash > 0 ? '#fff' : (e.phase === 3 ? '#ffd27a' : '#ff8a8a');
+    glow(ctx.fillStyle, 40);
+    ctx.beginPath(); ctx.arc(0, 0, 22 * pulse + (e.atk && e.atk.k === 'laser' ? 8 : 0), 0, TAU); ctx.fill();
+  }
+};
+
 export function drawEnemy(e) {
   const c = e.flash > 0 ? '#ffffff' : e.c;
   ctx.save();
   ctx.translate(e.x, e.y);
   ctx.strokeStyle = c; ctx.fillStyle = c; ctx.lineWidth = 2.5;
   glow(e.c, 14);
-  switch (e.type) {
-    case 'soldier': {
-      const s = e.pulled ? 0.8 : 1;
-      ctx.rotate(e.a);
-      ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.arc(0, 0, e.r * s, 0, TAU); ctx.fill();
-      ctx.globalAlpha = 1; ctx.beginPath(); ctx.arc(0, 0, e.r * s, 0, TAU); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(4, 0); ctx.lineTo(e.r + 6, 0); ctx.stroke();
-      ctx.beginPath(); ctx.arc(0, 0, 3, 0, TAU); ctx.fill();
-      break;
-    }
-    case 'tank': {
-      ctx.save(); ctx.rotate(e.a);
-      ctx.globalAlpha = 0.18; ctx.fillRect(-e.r, -e.r * 0.8, e.r * 2, e.r * 1.6);
-      ctx.globalAlpha = 1; ctx.strokeRect(-e.r, -e.r * 0.8, e.r * 2, e.r * 1.6);
-      ctx.strokeRect(-e.r, -e.r * 0.8 - 5, e.r * 2, 5); ctx.strokeRect(-e.r, e.r * 0.8, e.r * 2, 5);
-      ctx.restore();
-      ctx.rotate(e.ta);
-      if (e.tele > 0) { ctx.strokeStyle = '#fff'; ctx.fillStyle = '#fff'; glow('#ffb14a', 24); }
-      ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(38, 0); ctx.stroke();
-      ctx.beginPath(); ctx.arc(0, 0, 11, 0, TAU); ctx.fill();
-      break;
-    }
-    case 'heli': {
-      ctx.save(); ctx.rotate(e.a);
-      ctx.globalAlpha = 0.2; ctx.beginPath(); ctx.ellipse(0, 0, e.r, e.r * 0.62, 0, 0, TAU); ctx.fill();
-      ctx.globalAlpha = 1; ctx.beginPath(); ctx.ellipse(0, 0, e.r, e.r * 0.62, 0, 0, TAU); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(-e.r, 0); ctx.lineTo(-e.r - 14, 0); ctx.stroke();
-      ctx.restore();
-      ctx.rotate(e.t * 22); ctx.lineWidth = 2; ctx.globalAlpha = 0.8;
-      ctx.beginPath(); ctx.moveTo(-26, 0); ctx.lineTo(26, 0); ctx.moveTo(0, -26); ctx.lineTo(0, 26); ctx.stroke();
-      break;
-    }
-    case 'jet': {
-      if (e.state !== 'fly') break;
-      ctx.rotate(e.a);
-      ctx.beginPath(); ctx.moveTo(24, 0); ctx.lineTo(-16, -17); ctx.lineTo(-8, 0); ctx.lineTo(-16, 17); ctx.closePath();
-      ctx.globalAlpha = 0.3; ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
-      break;
-    }
-    case 'battery': {
-      poly(0, 0, e.r, 6, e.state === 'on' ? e.t * 0.6 : e.a);
-      ctx.globalAlpha = 0.18; ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
-      const k = e.state === 'on' ? clamp(1 - e.cd / 1, 0, 1) : 0;
-      for (let i = 0; i < 3; i++) { const a = e.t * 0.6 + i * TAU / 3; ctx.beginPath(); ctx.arc(Math.cos(a) * 11, Math.sin(a) * 11, 4 + k * 2, 0, TAU); ctx.fill(); }
-      break;
-    }
-    case 'boss': {
-      ctx.lineWidth = 4; glow(e.c, 30);
-      poly(0, 0, e.r, 8, e.a);
-      ctx.globalAlpha = 0.16; ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
-      poly(0, 0, e.r * 0.72, 8, -e.a * 1.6); ctx.lineWidth = 2; ctx.stroke();
-      for (let i = 0; i < 4; i++) { const a = e.a + i * TAU / 4 + TAU / 16; ctx.beginPath(); ctx.arc(Math.cos(a) * e.r * 0.86, Math.sin(a) * e.r * 0.86, 9, 0, TAU); ctx.fill(); }
-      const pulse = 0.75 + Math.sin(e.t * 6) * 0.25;
-      ctx.fillStyle = e.flash > 0 ? '#fff' : (e.phase === 3 ? '#ffd27a' : '#ff8a8a');
-      glow(ctx.fillStyle, 40);
-      ctx.beginPath(); ctx.arc(0, 0, 22 * pulse + (e.atk && e.atk.k === 'laser' ? 8 : 0), 0, TAU); ctx.fill();
-      break;
-    }
-  }
+  DRAW_BY_TYPE[e.type](e);
   ctx.restore();
   // barre de vie des unités blessées
   if (e.type !== 'boss' && e.type !== 'soldier' && e.hp < e.maxHp && !(e.type === 'jet' && e.state !== 'fly')) {

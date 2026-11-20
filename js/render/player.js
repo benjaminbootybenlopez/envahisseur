@@ -1,7 +1,7 @@
 /**
  * Dessin de la soucoupe, de son rayon, de son bouclier et de ses drones.
  */
-import { COLORS } from '../config.js';
+import { COLORS, DASH_TRAIL_LIFE } from '../config.js';
 import { TAU } from '../utils/math.js';
 import { dashTrail, game, player, stats } from '../state.js';
 import { ctx } from './canvas.js';
@@ -29,7 +29,7 @@ export function drawPlayer() {
   if (player.dead) return;
   // traînée du dash
   for (const g of dashTrail) {
-    ctx.globalAlpha = g.life / 0.25 * 0.45;
+    ctx.globalAlpha = g.life / DASH_TRAIL_LIFE * 0.45;
     ctx.strokeStyle = COLORS.alien; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(g.x, g.y, player.r, 0, TAU); ctx.stroke();
   }

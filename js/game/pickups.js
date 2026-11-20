@@ -12,10 +12,10 @@ export function updatePickups(dt) {
   for (const p of pickups) {
     p.life -= dt; p.a += dt * 4;
     const d = dist(p, player);
-    const pulled = !player.dead && (p.pull || d < stats.magnet || game.clearT >= 0);
-    if (pulled) { const a = angTo(p, player), s = p.pull || game.clearT >= 0 ? 700 : 420; p.vx = Math.cos(a) * s; p.vy = Math.sin(a) * s; }
+    const attracted = !player.dead && (p.pulled || d < stats.magnet || game.clearT >= 0);
+    if (attracted) { const a = angTo(p, player), s = p.pulled || game.clearT >= 0 ? 700 : 420; p.vx = Math.cos(a) * s; p.vy = Math.sin(a) * s; }
     else { p.vx *= Math.exp(-3 * dt); p.vy *= Math.exp(-3 * dt); }
-    p.pull = false;
+    p.pulled = false;
     p.x += p.vx * dt; p.y += p.vy * dt;
     if (!player.dead && d < player.r + 10) { p.dead = true; addScore(5); if (player.charges < stats.dashMax) player.dashRe += 0.07; SFX.pickup(); spark(p.x, p.y, COLORS.shard, rand(0, TAU), 3); }
     if (p.life <= 0) p.dead = true;

@@ -48,6 +48,14 @@ byId('btn-again').addEventListener('click', click(() => startGame(game.diff)));
 byId('btn-quit').addEventListener('click', click(() => setState('menu')));
 byId('btn-menu').addEventListener('click', click(() => setState('menu')));
 
+/** Fait avancer la partie d'une image et ouvre l'écran demandé par la logique de jeu. */
+function advance(dt) {
+  if (game.state === 'play') consumeTrackpad(dt);
+  const event = updateGame(dt);
+  if (event === 'upgrade') openUpgrade();
+  else if (event === 'end') showOutcome(game.won);
+}
+
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.034, Math.max(0, (now - last) / 1000));
@@ -56,10 +64,7 @@ function frame(now) {
     game.time += dt;
     updateMenuAmbience(dt);
   } else {
-    if (game.state === 'play') consumeTrackpad(dt);
-    const event = updateGame(dt);
-    if (event === 'upgrade') openUpgrade();
-    else if (event === 'end') showOutcome(game.won);
+    advance(dt);
   }
   render();
   requestAnimationFrame(frame);
@@ -70,6 +75,6 @@ requestAnimationFrame(frame);
 if (params.has('debug')) {
   window.__game = {
     game, player, stats, skipOutcome, input, enemies, enemyShots, startGame, startWave, spawnEnemy, updateGame, render, openUpgrade, chooseUpgrade, consumeTrackpad,
-    step(n, dt = 1 / 60) { for (let i = 0; i < n; i++) { if (game.state === 'play') consumeTrackpad(dt); const ev = updateGame(dt); if (ev === 'upgrade') openUpgrade(); else if (ev === 'end') showOutcome(game.won); } render(); }
+    step(n, dt = 1 / 60) { for (let i = 0; i < n; i++) advance(dt); render(); }
   };
 }

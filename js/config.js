@@ -9,6 +9,8 @@ export const FONT = '"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif
 // Dernière vague normale ; la vague suivante est celle du boss.
 export const LAST_WAVE = 10;
 export const STORAGE_KEY = 'envahisseur_best';
+// durée de la traînée laissée par le dash, en secondes
+export const DASH_TRAIL_LIFE = 0.25;
 
 export const COLORS = {
   alien: '#5cffc8', shot: '#8affe0', soldier: '#ffb14a', tank: '#ff6a3d', heli: '#ffe14a',

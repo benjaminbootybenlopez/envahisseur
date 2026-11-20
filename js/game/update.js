@@ -2,10 +2,11 @@
  * Pas de simulation : fait avancer la partie d’une image.
  */
 import { COLORS, LAST_WAVE } from '../config.js';
-import { compact, rand, TAU } from '../utils/math.js';
+import { compact } from '../utils/math.js';
 import { dashTrail, enemies, enemyShots, floatingTexts, game, particles, pickups, player, playerShots, rings } from '../state.js';
 import { SFX } from '../audio/sfx.js';
-import { spark, updateEffects } from './effects.js';
+import { destroyShot } from './combat.js';
+import { showBanner, updateEffects } from './effects.js';
 import { updateEnemies } from './enemies.js';
 import { updatePickups } from './pickups.js';
 import { updatePlayer } from './player.js';
@@ -45,8 +46,8 @@ export function updateGame(rawDt) {
   // fin de vague
   if (!player.dead && !game.won && game.wave <= LAST_WAVE && game.clearT < 0 && !game.queue.length && !enemies.length) {
     game.clearT = 1.5;
-    for (const b of enemyShots) { b.dead = true; spark(b.x, b.y, b.c, rand(0, TAU), 2); }
-    game.banner = { title: 'VAGUE ' + game.wave + ' NETTOYÉE', sub: '', t: 1.5, max: 1.5, c: COLORS.alien };
+    for (const b of enemyShots) destroyShot(b);
+    showBanner('VAGUE ' + game.wave + ' NETTOYÉE', '', 1.5, COLORS.alien);
     SFX.clear();
   }
   let event = null;

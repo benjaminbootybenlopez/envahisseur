@@ -1,27 +1,48 @@
 /**
- * Effets visuels : particules, ondes, textes flottants, tremblements.
+ * Effets visuels : particules, ondes, textes flottants, tremblements et bannières.
  */
 import { COLORS, H, W } from '../config.js';
 import { compact, lerp, pick, rand, TAU } from '../utils/math.js';
 import { dashTrail, floatingTexts, game, particles, rings } from '../state.js';
 
+// au-delà, les nouvelles particules sont ignorées pour préserver les performances
+const MAX_PARTICLES = 1400;
+const particlesFull = () => particles.length > MAX_PARTICLES;
+
+/**
+ * Ajoute une particule : { x, y, vx, vy, life, size, color }, plus `drag` (freinage, 0 par défaut)
+ * et `max` (durée de vie de référence pour le fondu, `life` par défaut).
+ */
+export function emitParticle(p) {
+  if (!particlesFull()) particles.push({ max: p.life, drag: 0, ...p });
+}
+
+/** Explosion de particules dans toutes les directions. */
 export function burst(x, y, color, n, speed, size, life) {
   for (let i = 0; i < n; i++) {
-    if (particles.length > 1400) break;
+    if (particlesFull()) break;
     const a = rand(0, TAU), s = speed * rand(0.2, 1);
-    particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: life * rand(0.5, 1), max: life, size: size * rand(0.5, 1.2), color, drag: 3 });
+    emitParticle({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: life * rand(0.5, 1), max: life, size: size * rand(0.5, 1.2), color, drag: 3 });
   }
 }
+
+/** Gerbe d'étincelles orientée autour de l'angle a. */
 export function spark(x, y, color, a, n) {
   for (let i = 0; i < n; i++) {
-    if (particles.length > 1400) break;
+    if (particlesFull()) break;
     const aa = a + rand(-0.6, 0.6), s = rand(150, 480);
-    particles.push({ x, y, vx: Math.cos(aa) * s, vy: Math.sin(aa) * s, life: rand(0.12, 0.3), max: 0.3, size: rand(2, 4), color, drag: 4 });
+    emitParticle({ x, y, vx: Math.cos(aa) * s, vy: Math.sin(aa) * s, life: rand(0.12, 0.3), max: 0.3, size: rand(2, 4), color, drag: 4 });
   }
 }
+
 export function ring(x, y, color, maxR, life, width) { rings.push({ x, y, r: 6, maxR, life, max: life, color, width: width || 3 }); }
 export function floatText(x, y, txt, color, size) { floatingTexts.push({ x, y, txt, color, life: 0.9, max: 0.9, size: size || 18 }); }
 export function shake(v) { game.shake = Math.max(game.shake, v); }
+
+/** Grand titre affiché au centre de l'arène pendant `seconds` secondes. */
+export function showBanner(title, sub, seconds, color) {
+  game.banner = { title, sub, t: seconds, max: seconds, c: color };
+}
 
 export function updateEffects(dt) {
   for (const p of particles) {
@@ -36,7 +57,7 @@ export function updateEffects(dt) {
 /** Particules qui dérivent derrière l'écran titre. */
 export function updateMenuAmbience(dt) {
   if (Math.random() < dt * 14 && particles.length < 160) {
-    particles.push({ x: rand(0, W), y: H + 10, vx: rand(-20, 20), vy: rand(-140, -40), life: rand(4, 8), max: 8, size: rand(2, 4), color: pick([COLORS.alien, '#6bd6ff', '#b46bff']), drag: 0 });
+    emitParticle({ x: rand(0, W), y: H + 10, vx: rand(-20, 20), vy: rand(-140, -40), life: rand(4, 8), max: 8, size: rand(2, 4), color: pick([COLORS.alien, '#6bd6ff', '#b46bff']) });
   }
   for (const p of particles) { p.life -= dt; if (p.life <= 0) p.dead = true; p.x += p.vx * dt; p.y += p.vy * dt; }
   compact(particles);
