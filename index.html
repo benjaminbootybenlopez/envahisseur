@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Mini jeu d'arcade néon : tu pilotes la soucoupe alien qui envahit la Terre.">
+  <title>ENVAHISSEUR</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/screens.css">
+  <link rel="stylesheet" href="css/components.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <section id="menu" class="screen on">
+    <h1>ENVAHISSEUR</h1>
+    <p class="sub">La Terre ne se rendra pas sans combattre. Tant pis pour elle.</p>
+    <div class="row">
+      <button class="card" data-diff="easy">
+        <div class="ico">◎</div>
+        <div class="name">Détendue</div>
+        <div class="desc">5 points de coque, tirs ennemis plus lents. Pour le plaisir de tout raser.</div>
+        <div class="lvl" id="best-easy">RECORD —</div>
+      </button>
+      <button class="card hard" data-diff="hard">
+        <div class="ico">◆</div>
+        <div class="name">Exigeante</div>
+        <div class="desc">3 points de coque, armée humaine à pleine puissance. Dure mais juste.</div>
+        <div class="lvl" id="best-hard">RECORD —</div>
+      </button>
+    </div>
+    <div class="controls">
+      <b>TRACKPAD / SOURIS</b><span>Glisse dans une direction pour y aller, la soucoupe s’arrête avec ton doigt</span>
+      <b>VISÉE</b><span>Automatique, sur la cible la plus proche</span>
+      <b>ESPACE</b><span>Tirer (maintenir)</span>
+      <b id="key-dash">Z</b><span>Dash destructeur, invincible pendant le dash</span>
+      <b id="key-beam">X</b><span>Rayon tracteur (débloqué vague 2)</span>
+      <b id="key-note">CLAVIER AZERTY</b><span id="key-note2">Le dash est sur W, la touche à gauche de X</span>
+      <b>ÉCHAP</b><span>Pause &nbsp;·&nbsp; <b>M</b> couper le son</span>
+    </div>
+    <p class="foot">10 VAGUES · 1 BOSS · UNE MUTATION ENTRE CHAQUE VAGUE</p>
+  </section>
+
+  <section id="upgrade" class="screen">
+    <h2 id="up-title">VAGUE NETTOYÉE</h2>
+    <p class="sub">Choisis une mutation</p>
+    <div class="row" id="up-cards"></div>
+  </section>
+
+  <section id="pause" class="screen">
+    <h2>PAUSE</h2>
+    <p class="sub" id="pause-sub">Vague 1</p>
+    <div class="col">
+      <button class="btn" id="btn-resume">Reprendre</button>
+      <button class="btn" id="btn-restart">Recommencer</button>
+      <button class="btn" id="btn-quit">Menu principal</button>
+    </div>
+  </section>
+
+  <section id="end" class="screen">
+    <h2 id="end-title">SOUCOUPE DÉTRUITE</h2>
+    <p class="sub tight" id="end-sub"></p>
+    <div class="record" id="end-record"></div>
+    <div class="stats" id="end-stats"></div>
+    <p class="taken" id="end-taken"></p>
+    <div class="row">
+      <button class="btn" id="btn-again">Rejouer</button>
+      <button class="btn" id="btn-menu">Menu principal</button>
+    </div>
+  </section>
+</body>
+</html>

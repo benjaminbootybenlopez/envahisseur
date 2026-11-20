@@ -2,11 +2,19 @@
 
 Mini jeu d'arcade néon qui se joue dans le navigateur. Tu pilotes une soucoupe alien et tu envahis la Terre, pendant que l'armée humaine riposte de plus en plus fort.
 
-Le jeu tient dans un seul fichier, `envahisseur.html`, sans dépendance ni installation.
+HTML, CSS et JavaScript natifs, sans dépendance ni étape de build.
 
 ## Jouer
 
-Télécharge `envahisseur.html` et ouvre-le d'un double-clic. Il fonctionne hors connexion dans un navigateur récent (Chrome, Edge, Safari, Firefox).
+Le jeu est un site statique prévu pour GitHub Pages. Il utilise des modules JavaScript (`import`/`export`), que les navigateurs refusent de charger depuis un fichier ouvert d'un double-clic : il faut le servir en HTTP.
+
+En local, depuis la racine du dépôt :
+
+```bash
+python3 -m http.server 8000
+```
+
+puis ouvre http://localhost:8000 dans un navigateur récent (Chrome, Edge, Safari, Firefox).
 
 Il faut un ordinateur avec un clavier et un trackpad ou une souris. Le jeu ne se joue pas sur téléphone.
 
@@ -54,11 +62,41 @@ Pendant la partie, le pointeur est capturé par le jeu. Échap le libère et met
 
 Canons surcadencés, Plasma concentré, Canon jumelé, Tirs perforants, Bombes à plasma, Saut quantique, Réacteur de phase, Onde de choc, Coque renforcée, Nanoréparation, Rayon élargi, Assimilation, Drone orbital, Surcharge, Bouclier, Tirs guidés.
 
-## Technique
+## Architecture
 
-- HTML, CSS et JavaScript dans un seul fichier, rendu sur un `<canvas>` 2D.
+Chaque fichier a une seule responsabilité, décrite dans son commentaire d'en-tête.
+
+```
+index.html            structure des écrans, aucune logique ni style en ligne
+css/
+  base.css            variables de thème, remise à zéro, canvas
+  screens.css         écrans superposés et leur mise en page
+  components.css      cartes, boutons, aide des contrôles, statistiques
+js/
+  main.js             point d'entrée : branche les entrées et l'interface, boucle de jeu
+  config.js           constantes : arène, couleurs, difficultés, vagues, réglages
+  state.js            état mutable partagé (partie, joueur, entités, commandes)
+  storage.js          meilleurs scores (localStorage)
+  utils/              fonctions pures : maths, mise en forme
+  audio/              moteur Web Audio, effets sonores, musique générative
+  game/               logique de jeu, sans DOM : joueur, ennemis, boss, tirs, combat, vagues…
+  render/             dessin sur le canvas : décor, entités, HUD, composition de l'image
+  input/              clavier, trackpad, disposition du clavier
+  ui/                 écrans HTML : menu, mutations, pause, fin
+```
+
+Les dépendances vont dans un seul sens, sans cycle :
+
+- `game/` et `audio/` ne touchent jamais au DOM et ne connaissent ni l'interface ni les entrées.
+- `game/update.js` signale la fin d'une vague ou de la partie par une valeur de retour ; c'est `main.js` qui ouvre l'écran correspondant.
+- `input/` reçoit ses réactions (pause, son, choix de mutation) de `main.js`, au lieu d'importer l'interface.
+
+## Développement
+
 - Sons et musique synthétisés en direct avec Web Audio, sans fichier audio.
-- Pour tester une vague précise, ajoute `?wave=7` à l'adresse (de 1 à 10, ou 11 pour le boss).
+- `?wave=7` démarre directement à la vague 7 (de 1 à 10, ou 11 pour le boss).
+- `?debug` expose l'état du jeu dans la console sous `window.__game`.
+- Le fichier `.nojekyll` indique à GitHub Pages de servir les fichiers tels quels.
 
 ## Origine
 

@@ -1,0 +1,109 @@
+/* Composants réutilisables : cartes, boutons, aide des contrôles, statistiques. */
+
+/* Carte de choix (difficulté ou mutation). --c donne la couleur d'accent. */
+.card {
+  width: 250px;
+  padding: 22px 20px;
+  border: 1.5px solid rgba(92, 255, 200, 0.35);
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--ink);
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.card:hover,
+.card:focus-visible {
+  outline: none;
+  transform: translateY(-5px);
+  border-color: var(--c, var(--alien));
+  box-shadow: 0 0 26px color-mix(in srgb, var(--c, var(--alien)) 45%, transparent);
+}
+
+.card.hard { --c: #ff5c8a; border-color: rgba(255, 92, 138, 0.4); }
+
+.card .key {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 2px 7px;
+  border: 1px solid rgba(139, 150, 184, 0.4);
+  border-radius: 5px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--mute);
+}
+
+.card .ico {
+  margin-bottom: 10px;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--c, var(--alien));
+  text-shadow: 0 0 14px var(--c, var(--alien));
+}
+
+.card .name { margin-bottom: 8px; font-size: 17px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.card .desc { min-height: 40px; font-size: 14px; line-height: 1.45; color: var(--ink-soft); }
+.card .lvl { margin-top: 12px; font-size: 12px; letter-spacing: 0.12em; color: var(--mute); }
+
+.btn {
+  min-width: 220px;
+  padding: 13px 26px;
+  border: 1.5px solid rgba(92, 255, 200, 0.4);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.12s, box-shadow 0.12s, transform 0.12s;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  outline: none;
+  transform: translateY(-2px);
+  border-color: var(--alien);
+  box-shadow: 0 0 20px rgba(92, 255, 200, 0.4);
+}
+
+/* Aide des contrôles sur l'écran titre : touche à gauche, action à droite. */
+.controls {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 7px 18px;
+  margin-top: 34px;
+  font-size: 14px;
+  text-align: left;
+  color: var(--ink-soft);
+}
+
+.controls b { font-weight: 700; letter-spacing: 0.06em; color: var(--alien); }
+.controls > b { text-align: right; }
+
+/* Écran de fin */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+  gap: 12px;
+  margin: 22px 0 16px;
+}
+
+.stat { padding: 12px 16px; border: 1px solid rgba(139, 150, 184, 0.25); border-radius: 10px; background: var(--panel); }
+.stat .v { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat .l { margin-top: 2px; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mute); }
+
+.taken { max-width: 640px; margin-bottom: 22px; font-size: 13px; line-height: 1.6; color: var(--ink-soft); }
+
+.record {
+  height: 18px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--warm);
+  text-shadow: 0 0 12px rgba(255, 177, 74, 0.7);
+}

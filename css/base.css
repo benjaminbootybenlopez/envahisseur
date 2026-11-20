@@ -1,0 +1,36 @@
+/* Variables de thème, remise à zéro et canvas du jeu. */
+
+:root {
+  --alien: #5cffc8;
+  --danger: #ff3b5c;
+  --warm: #ffb14a;
+  --ink: #e8f0ff;
+  --ink-soft: #b9c3e0;
+  --mute: #8b96b8;
+  --faint: #56607f;
+  --bg: #02030a;
+  --panel: rgba(10, 14, 32, 0.86);
+  --font: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#game {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  cursor: none;
+}
