@@ -6,7 +6,9 @@ HTML, CSS et JavaScript natifs, sans dépendance ni étape de build.
 
 ## Jouer
 
-Le jeu est un site statique prévu pour GitHub Pages. Il utilise des modules JavaScript (`import`/`export`), que les navigateurs refusent de charger depuis un fichier ouvert d'un double-clic : il faut le servir en HTTP.
+**En ligne : https://benjaminbootybenlopez.github.io/envahisseur/**
+
+Pour le lancer en local : le jeu est un site statique qui utilise des modules JavaScript (`import`/`export`), que les navigateurs refusent de charger depuis un fichier ouvert d'un double-clic : il faut le servir en HTTP.
 
 En local, depuis la racine du dépôt :
 
