@@ -4,11 +4,15 @@
 import { audio, noise, tone } from './engine.js';
 
 const BPM_BY_INTENSITY = [100, 118, 124, 130, 142];
-// intensité 0 = menu, 1 à 3 = vagues, 4 = boss
+// intensité 0 = menu, 1 à 3 = vagues, 4 = boss ; MUSIC_SILENT coupe la musique
+export const MUSIC_SILENT = -1;
 const seq = { intensity: 0, bpm: BPM_BY_INTENSITY[0], step: 0, next: 0 };
 let timer = null;
 
-export function setMusic(intensity) { seq.intensity = intensity; seq.bpm = BPM_BY_INTENSITY[intensity]; }
+export function setMusic(intensity) {
+  seq.intensity = intensity;
+  if (intensity !== MUSIC_SILENT) seq.bpm = BPM_BY_INTENSITY[intensity];
+}
 
 export function startMusic() { if (!timer) timer = setInterval(musicTick, 25); }
 
@@ -24,6 +28,7 @@ function musicTick() {
 }
 function musicStep(s, t, spb) {
   const I = seq.intensity, st = s % 16, bar = (s >> 4) % 4;
+  if (I === MUSIC_SILENT) return;
   const root = (I === 4 ? [0, 1, 0, -2] : [0, 0, -4, -2])[bar];
   const m = audio.music;
   if (I === 0) {

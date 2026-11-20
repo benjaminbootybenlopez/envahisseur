@@ -12,7 +12,7 @@ import { setPointerLock } from '../input/pointer.js';
 import { byId } from './dom.js';
 import { showBest } from './menu-screen.js';
 
-const SCREENS = { menu: byId('menu'), upgrade: byId('upgrade'), pause: byId('pause'), end: byId('end') };
+const SCREENS = { menu: byId('menu'), upgrade: byId('upgrade'), pause: byId('pause'), outcome: byId('outcome'), end: byId('end') };
 let lastPauseToggle = 0;
 
 export function setState(state) {

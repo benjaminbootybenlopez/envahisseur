@@ -39,6 +39,7 @@ Pendant la partie, le pointeur est capturé par le jeu. Échap le libère et met
 - **10 vagues, puis un boss** : le Bastion, en trois phases. Une partie complète dure environ 8 minutes.
 - **Une mutation après chaque vague** : tu en choisis une parmi trois, donc chaque partie est différente.
 - **Deux difficultés** : « Détendue » (5 points de coque, tirs ennemis plus lents) et « Exigeante » (3 points de coque).
+- **Fin de partie** : un écran GAME OVER ou YOU WIN, avec son jingle, puis l'écran des scores (automatiquement après 3,5 secondes, ou tout de suite avec Espace, Entrée ou un clic).
 - **Record** sauvegardé dans le navigateur, un par difficulté.
 
 ## Mécaniques
@@ -72,6 +73,7 @@ css/
   base.css            variables de thème, remise à zéro, canvas
   screens.css         écrans superposés et leur mise en page
   components.css      cartes, boutons, aide des contrôles, statistiques
+  outcome.css         écran GAME OVER / YOU WIN et ses animations
 js/
   main.js             point d'entrée : branche les entrées et l'interface, boucle de jeu
   config.js           constantes : arène, couleurs, difficultés, vagues, réglages
@@ -82,7 +84,7 @@ js/
   game/               logique de jeu, sans DOM : joueur, ennemis, boss, tirs, combat, vagues…
   render/             dessin sur le canvas : décor, entités, HUD, composition de l'image
   input/              clavier, trackpad, disposition du clavier
-  ui/                 écrans HTML : menu, mutations, pause, fin
+  ui/                 écrans HTML : menu, mutations, pause, GAME OVER / YOU WIN, scores
 ```
 
 Les dépendances vont dans un seul sens, sans cycle :

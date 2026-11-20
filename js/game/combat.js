@@ -66,7 +66,7 @@ export function damagePlayer() {
   if (player.hp <= 0) {
     player.dead = true; game.endT = 1.7; game.slow = 1.2; setBeamSound(false);
     burst(player.x, player.y, COLORS.alien, 70, 700, 7, 1.1); burst(player.x, player.y, '#ffffff', 30, 420, 4, 0.8);
-    ring(player.x, player.y, COLORS.alien, 320, 0.8, 8); shake(34); SFX.boom(true); SFX.lose();
+    ring(player.x, player.y, COLORS.alien, 320, 0.8, 8); shake(34); SFX.boom(true);
   }
 }
 function bossDeath(e) {
@@ -81,7 +81,7 @@ function bossDeath(e) {
   }
   burst(e.x, e.y, '#ffffff', 60, 900, 6, 1.2);
   ring(e.x, e.y, '#ffffff', 700, 1.2, 10); ring(e.x, e.y, COLORS.boss, 420, 0.9, 8);
-  shake(40); game.flash = 1; SFX.boom(true); SFX.win();
+  shake(40); game.flash = 1; SFX.boom(true);
   game.banner = { title: 'LA TERRE EST À TOI', sub: '', t: 3.4, max: 3.4, c: COLORS.alien };
   game.boss = null;
 }

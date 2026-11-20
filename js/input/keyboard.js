@@ -1,5 +1,5 @@
 /**
- * Clavier : flèches, tir, dash, rayon, pause, son et choix des mutations.
+ * Clavier : flèches, tir, dash, rayon, pause, son, choix des mutations et passage de l'écran de fin.
  */
 import { game, input, resetInput } from '../state.js';
 import { learnKeyLabel } from './key-labels.js';
@@ -8,7 +8,7 @@ const ARROWS = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight
 const UPGRADE_KEYS = { Digit1: 0, Digit2: 1, Digit3: 2, Numpad1: 0, Numpad2: 1, Numpad3: 2 };
 
 /** Branche le clavier ; `actions` fournit les réactions de l'interface. */
-export function bindKeyboard({ togglePause, toggleMute, chooseUpgrade }) {
+export function bindKeyboard({ togglePause, toggleMute, chooseUpgrade, skipOutcome }) {
   addEventListener('keydown', e => {
     if (ARROWS[e.code]) { input[ARROWS[e.code]] = 1; e.preventDefault(); }
     if (e.code === 'Space') { e.preventDefault(); if (game.state === 'play') input.fireK = true; }
@@ -18,6 +18,7 @@ export function bindKeyboard({ togglePause, toggleMute, chooseUpgrade }) {
     if (e.code === 'Escape' || e.code === 'KeyP') togglePause();
     if (e.key && e.key.toLowerCase() === 'm') toggleMute();
     if (game.state === 'upgrade' && UPGRADE_KEYS[e.code] !== undefined) chooseUpgrade(UPGRADE_KEYS[e.code]);
+    if (game.state === 'outcome' && (e.code === 'Space' || e.code === 'Enter')) skipOutcome();
   });
   addEventListener('keyup', e => {
     if (ARROWS[e.code]) input[ARROWS[e.code]] = 0;

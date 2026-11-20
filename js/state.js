@@ -4,7 +4,7 @@
  * pour que chaque module garde la même référence.
  */
 
-// Partie en cours et état de l'écran ('menu', 'play', 'upgrade', 'pause', 'end').
+// Partie en cours et état de l'écran ('menu', 'play', 'upgrade', 'pause', 'outcome', 'end').
 export const game = { state: 'menu', diff: 'hard', time: 0, boss: null };
 // Soucoupe du joueur, ses statistiques (modifiées par les mutations) et la difficulté choisie.
 export const player = {};

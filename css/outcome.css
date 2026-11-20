@@ -1,0 +1,87 @@
+/* Écran GAME OVER / YOU WIN, affiché entre la fin de partie et les scores.
+   --accent donne la couleur (rouge ou vert), --duration la durée avant les scores. */
+
+.screen.outcome {
+  --accent: var(--danger);
+  --accent-glow: rgba(255, 59, 92, 0.7);
+  /* le jeu figé reste visible derrière, assombri */
+  background: radial-gradient(ellipse at center, rgba(2, 3, 10, 0.35), rgba(2, 3, 10, 0.88));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  cursor: pointer;
+  animation: outcome-fade 0.5s ease-out both;
+}
+
+.screen.outcome.win {
+  --accent: var(--alien);
+  --accent-glow: rgba(92, 255, 200, 0.7);
+}
+
+.outcome-title {
+  font-size: clamp(40px, 9vw, 168px);
+  white-space: nowrap;
+  letter-spacing: 0.16em;
+  padding-left: 0.16em;
+  color: var(--accent);
+  text-shadow: 0 0 24px var(--accent-glow), 0 0 90px var(--accent-glow);
+  animation:
+    outcome-zoom 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.2) both,
+    outcome-flicker 2.6s linear 0.7s infinite;
+}
+
+.outcome-sub {
+  margin: 18px 0 0;
+  font-size: clamp(16px, 2vw, 22px);
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  animation: outcome-rise 0.6s ease-out 0.6s both;
+}
+
+.outcome-hint {
+  margin: 48px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mute);
+  animation: outcome-rise 0.6s ease-out 1s both, outcome-pulse 1.6s ease-in-out 1.6s infinite;
+}
+
+/* fine barre qui se remplit jusqu'au passage automatique aux scores */
+.outcome-timer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+  transform-origin: left;
+  animation: outcome-timer var(--duration, 3.5s) linear both;
+}
+
+@keyframes outcome-fade { from { opacity: 0; } }
+
+@keyframes outcome-zoom {
+  from { opacity: 0; transform: scale(1.8); filter: blur(12px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes outcome-flicker {
+  0%, 92%, 100% { opacity: 1; }
+  93% { opacity: 0.55; }
+  95% { opacity: 1; }
+  97% { opacity: 0.7; }
+}
+
+@keyframes outcome-rise { from { opacity: 0; transform: translateY(12px); } }
+
+@keyframes outcome-pulse { 50% { opacity: 0.45; } }
+
+@keyframes outcome-timer { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .screen.outcome,
+  .outcome-title,
+  .outcome-sub,
+  .outcome-hint { animation: none; }
+}

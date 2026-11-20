@@ -18,8 +18,8 @@ import { watchKeyLabels } from './input/key-labels.js';
 import { bindKeyboard } from './input/keyboard.js';
 import { bindPointer, consumeTrackpad } from './input/pointer.js';
 import { byId } from './ui/dom.js';
-import { showEnd } from './ui/end-screen.js';
 import { renderKeyLabels, showBest } from './ui/menu-screen.js';
+import { showOutcome, skipOutcome } from './ui/outcome-screen.js';
 import { setState, startGame, togglePause } from './ui/screens.js';
 import { chooseUpgrade, openUpgrade } from './ui/upgrade-screen.js';
 
@@ -33,7 +33,7 @@ resizeCanvas();
 addEventListener('resize', resizeCanvas);
 watchKeyLabels(renderKeyLabels);
 
-const actions = { togglePause, toggleMute, chooseUpgrade };
+const actions = { togglePause, toggleMute, chooseUpgrade, skipOutcome };
 bindKeyboard(actions);
 bindPointer(actions);
 
@@ -59,7 +59,7 @@ function frame(now) {
     if (game.state === 'play') consumeTrackpad(dt);
     const event = updateGame(dt);
     if (event === 'upgrade') openUpgrade();
-    else if (event === 'end') showEnd(game.won);
+    else if (event === 'end') showOutcome(game.won);
   }
   render();
   requestAnimationFrame(frame);
@@ -69,7 +69,7 @@ requestAnimationFrame(frame);
 // ?debug expose l'état du jeu dans la console, pour les tests
 if (params.has('debug')) {
   window.__game = {
-    game, player, stats, input, enemies, enemyShots, startGame, startWave, spawnEnemy, updateGame, render, openUpgrade, chooseUpgrade, consumeTrackpad,
-    step(n, dt = 1 / 60) { for (let i = 0; i < n; i++) { if (game.state === 'play') consumeTrackpad(dt); const ev = updateGame(dt); if (ev === 'upgrade') openUpgrade(); else if (ev === 'end') showEnd(game.won); } render(); }
+    game, player, stats, skipOutcome, input, enemies, enemyShots, startGame, startWave, spawnEnemy, updateGame, render, openUpgrade, chooseUpgrade, consumeTrackpad,
+    step(n, dt = 1 / 60) { for (let i = 0; i < n; i++) { if (game.state === 'play') consumeTrackpad(dt); const ev = updateGame(dt); if (ev === 'upgrade') openUpgrade(); else if (ev === 'end') showOutcome(game.won); } render(); }
   };
 }

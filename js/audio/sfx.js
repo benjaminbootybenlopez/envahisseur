@@ -40,6 +40,26 @@ export const SFX = {
   upgrade() { [440, 554, 659, 880].forEach((f, i) => tone('square', f, 0, 0.16, 0.05, null, audio.ctx ? audio.ctx.currentTime + i * 0.06 : 0)); },
   clear() { [392, 494, 587, 784, 988].forEach((f, i) => tone('triangle', f, 0, 0.3, 0.09, null, audio.ctx ? audio.ctx.currentTime + i * 0.08 : 0)); },
   unlock() { [330, 440, 554, 659, 880, 1109].forEach((f, i) => tone('sine', f, 0, 0.35, 0.09, null, audio.ctx ? audio.ctx.currentTime + i * 0.09 : 0)); },
-  win() { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone('triangle', f, 0, 0.6, 0.1, null, audio.ctx ? audio.ctx.currentTime + i * 0.13 : 0)); },
-  lose() { [392, 330, 262, 196, 131].forEach((f, i) => tone('sawtooth', f, f * 0.94, 0.5, 0.08, null, audio.ctx ? audio.ctx.currentTime + i * 0.2 : 0)); }
+  // fanfare : arpège montant, note tenue, puis accord final scintillant
+  victory() {
+    if (!audio.ctx) return;
+    const t = audio.ctx.currentTime;
+    [523, 659, 784].forEach((f, i) => tone('square', f, 0, 0.16, 0.06, null, t + i * 0.12));
+    tone('square', 1047, 0, 0.5, 0.07, null, t + 0.36);
+    tone('triangle', 1047, 0, 0.5, 0.08, null, t + 0.36);
+    [523, 659, 784, 1047].forEach(f => {
+      tone('triangle', f, 0, 1.5, 0.08, null, t + 0.95, 0.02);
+      tone('square', f, 0, 1.2, 0.025, null, t + 0.95, 0.02);
+    });
+    [1568, 2093, 2637, 3136].forEach((f, i) => tone('sine', f, 0, 0.25, 0.04, null, t + 1.0 + i * 0.09));
+    noise(0.9, 0.05, 'highpass', 7000, 0, 1, null, t + 0.95);
+  },
+  // descente chromatique lente, puis accord grave qui s'éteint
+  gameOver() {
+    if (!audio.ctx) return;
+    const t = audio.ctx.currentTime;
+    [392, 370, 349, 330].forEach((f, i) => tone('sawtooth', f, f * 0.97, 0.4, 0.06, null, t + i * 0.38));
+    [82, 165, 196, 247].forEach(f => tone('triangle', f, f * 0.96, 1.8, f < 100 ? 0.25 : 0.07, null, t + 1.55, 0.03));
+    noise(1.4, 0.12, 'lowpass', 500, 80, 0.8, null, t + 1.55);
+  }
 };
